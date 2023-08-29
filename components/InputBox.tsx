@@ -7,18 +7,11 @@ import {
   XCircleIcon,
 } from "@heroicons/react/24/solid";
 import { FaceSmileIcon } from "@heroicons/react/24/outline";
-import {
-  addDoc,
-  collection,
-  doc,
-  serverTimestamp,
-  updateDoc,
-} from "firebase/firestore";
+import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { db, storage } from "../firebase";
 import toast from "react-hot-toast";
 import {
   StorageError,
-  UploadResult,
   getDownloadURL,
   ref,
   uploadBytesResumable,
