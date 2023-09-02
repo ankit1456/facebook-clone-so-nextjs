@@ -21,17 +21,17 @@ import {
 const InputBox = () => {
   const { data: session } = useSession();
   const [image, setImage] = useState<ArrayBuffer | string>("");
+  const [message, setMessage] = useState("");
   const [preview, setPreview] = useState<File | undefined>(undefined);
-  const inputRef = useRef<HTMLInputElement | null>(null);
+
   const filePickerRef = useRef<HTMLInputElement | null>(null);
 
   const addPost = async (e: FormEvent) => {
     e.preventDefault();
-    if (!inputRef.current?.value) return;
 
-    if (!image) {
+    if (!image && message) {
       await addDoc(collection(db, "posts"), {
-        message: inputRef.current.value,
+        message,
         name: session?.user?.name,
         email: session?.user?.email,
         image: session?.user?.image,
@@ -70,7 +70,7 @@ const InputBox = () => {
               const url = await getDownloadURL(uploadTask.snapshot.ref);
 
               await addDoc(collection(db, "posts"), {
-                message: inputRef.current?.value,
+                message,
                 name: session?.user?.name,
                 email: session?.user?.email,
                 image: session?.user?.image,
@@ -89,8 +89,7 @@ const InputBox = () => {
       console.log("error:", error);
       toast.error("Something went wrong");
     }
-
-    inputRef.current.value = "";
+    setMessage("");
   };
 
   const addImage = (e: ChangeEvent<HTMLInputElement>) => {
@@ -126,17 +125,27 @@ const InputBox = () => {
           />
         )}
         <form className="flex flex-1" onSubmit={addPost}>
-          <input
-            ref={inputRef}
-            className="rounded-full text-sm md:text-base font-normal h-10 md:h-12 bg-gray-100 flex-grow px-3 md:px-5  focus:outline-none"
-            type="text"
-            placeholder={`What's on your mind, ${
-              session?.user?.name?.split(" ")[0]
-            }?`}
-          />
-          <button hidden type="submit">
-            Submit
-          </button>
+          <div className="flex rounded-full bg-gray-100 w-full items-center">
+            <input
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              className="w-full text-sm md:text-base font-normal h-10 md:h-12 bg-transparent flex-grow px-3 md:px-5  focus:outline-none"
+              type="text"
+              placeholder={`What's on your mind, ${
+                session?.user?.name?.split(" ")[0]
+              }?`}
+            />
+            <button
+              disabled={!message && !(image as string)}
+              type="submit"
+              className="bg-blue-500 text-white rounded-full p-1 mr-2 px-2 text-xs md:text-base md:px-4 disabled:bg-blue-300"
+            >
+              Post
+            </button>
+            <button hidden type="submit">
+              Submit
+            </button>
+          </div>
         </form>
       </div>
 
